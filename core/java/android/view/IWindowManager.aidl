@@ -284,6 +284,11 @@ interface IWindowManager
     void sendCustomAction(in Intent intent);
 
     /**
+     * Call screen record from WindowManager.
+     */
+    void screenRecordAction(int mode);
+
+    /**
      * Called by System UI to notify of changes to the visibility of Recents.
      */
     oneway void setRecentsVisibility(boolean visible);

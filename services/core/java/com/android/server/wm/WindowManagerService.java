@@ -6130,6 +6130,11 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
+    public void screenRecordAction(int mode) {
+        mPolicy.screenRecordAction(mode);
+    }
+
+    @Override
     public void lockNow(Bundle options) {
         mPolicy.lockNow(options);
     }

@@ -1589,6 +1589,11 @@ public interface WindowManagerPolicy extends WindowManagerPolicyConstants {
     public void sendCustomAction(Intent intent);
 
     /**
+     * Call screen record from WindowManager.
+     */
+    public void screenRecordAction(int mode);
+
+    /**
      * Lock the device now.
      */
     public void lockNow(Bundle options);
