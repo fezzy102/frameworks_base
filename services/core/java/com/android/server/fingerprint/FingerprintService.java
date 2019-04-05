@@ -38,6 +38,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
+import android.content.res.Resources;
 import android.hardware.biometrics.IBiometricPromptReceiver;
 import android.hardware.biometrics.fingerprint.V2_1.IBiometricsFingerprint;
 import android.hardware.biometrics.fingerprint.V2_1.IBiometricsFingerprintClientCallback;
@@ -155,6 +156,8 @@ public class FingerprintService extends SystemService implements IHwBinder.Death
     
     private IVendorFingerprintExtensions mExtDaemon;
 
+    private boolean mUsesOnePlusFOD;
+
     private class UserFingerprint {
         Fingerprint f;
         int userId;
@@ -266,8 +269,12 @@ public class FingerprintService extends SystemService implements IHwBinder.Death
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
         mActivityManager = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE))
                 .getService();
+<<<<<<< HEAD
         mNotifyClient = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_notifyClientOnFingerprintCancelSuccess);
+=======
+        mUsesOnePlusFOD = context.getResources().getBoolean(com.android.internal.R.bool.config_usesOnePlusFOD);
+>>>>>>> d69fadb0e38... Initial support for OnePlus in-display fingerprint sensor
     }
 
     @Override
@@ -456,7 +463,14 @@ public class FingerprintService extends SystemService implements IHwBinder.Death
     }
 
     protected void handleError(long deviceId, int error, int vendorCode) {
+<<<<<<< HEAD
         if (error != 8) {
+=======
+
+        if (mUsesOnePlusFOD && error == 8)
+            return;
+
+>>>>>>> d69fadb0e38... Initial support for OnePlus in-display fingerprint sensor
         ClientMonitor client = mCurrentClient;
         if (client instanceof InternalRemovalClient || client instanceof InternalEnumerateClient) {
             clearEnumerateState();

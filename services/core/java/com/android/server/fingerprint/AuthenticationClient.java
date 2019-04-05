@@ -56,6 +56,9 @@ public abstract class AuthenticationClient extends ClientMonitor {
     protected boolean mDialogDismissed;
     private boolean mCustomDialog;
 
+    private FODCircleView mfodCircleView;
+    private boolean mDisplayFODView;
+
     // Receives events from SystemUI and handles them before forwarding them to FingerprintDialog
     protected IBiometricPromptReceiver mDialogReceiver = new IBiometricPromptReceiver.Stub() {
         @Override // binder call
@@ -98,8 +101,8 @@ public abstract class AuthenticationClient extends ClientMonitor {
         mStatusBarService = statusBarService;
         mFingerprintManager = (FingerprintManager) getContext()
                 .getSystemService(Context.FINGERPRINT_SERVICE);
-        final Resources resources = context.getResources();
-        mCustomDialog = resources.getBoolean(com.android.internal.R.bool.config_showCustomFingerprintDialog);
+        mfodCircleView = new FODCircleView(context);
+        mDisplayFODView = context.getResources().getBoolean(com.android.internal.R.bool.config_needCustomFODView);
     }
 
     @Override
@@ -237,6 +240,7 @@ public abstract class AuthenticationClient extends ClientMonitor {
             resetFailedAttempts();
             onStop();
         }
+        if(result == true && mDisplayFODView) mfodCircleView.hide();
         return result;
     }
 
@@ -250,6 +254,10 @@ public abstract class AuthenticationClient extends ClientMonitor {
             Slog.w(TAG, "start authentication: no fingerprint HAL!");
             return ERROR_ESRCH;
         }
+
+        if (mDisplayFODView)
+            mfodCircleView.show();
+
         onStart();
         try {
             final int result = daemon.authenticate(mOpId, getGroupId());
@@ -262,7 +270,7 @@ public abstract class AuthenticationClient extends ClientMonitor {
             if (DEBUG) Slog.w(TAG, "client " + getOwnerString() + " is authenticating...");
 
             // If authenticating with system dialog, show the dialog
-            if (mBundle != null || mCustomDialog) {
+            if (!mDisplayFODView && mBundle != null) {
                 try {
                    if (mBundle == null) {
                         mBundle = new Bundle();
@@ -287,6 +295,9 @@ public abstract class AuthenticationClient extends ClientMonitor {
             return 0;
         }
 
+        if (mDisplayFODView)
+             mfodCircleView.hide();
+
         onStop();
         IBiometricsFingerprint daemon = getFingerprintDaemon();
         if (daemon == null) {
@@ -308,7 +319,7 @@ public abstract class AuthenticationClient extends ClientMonitor {
             // dialog, we do not need to hide it since it's already hidden.
             // If the device is in lockout, don't hide the dialog - it will automatically hide
             // after BiometricPrompt.HIDE_DIALOG_DELAY
-            if ((mBundle != null || mCustomDialog) && !mDialogDismissed && !mInLockout) {
+            if (!mDisplayFODView && mBundle != null && !mDialogDismissed && !mInLockout) {
                 try {
                     mStatusBarService.hideCustomFingerprintDialog();
                 } catch (RemoteException e) {

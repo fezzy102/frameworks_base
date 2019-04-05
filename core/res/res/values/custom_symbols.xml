@@ -145,4 +145,8 @@
   <java-symbol type="bool" name="config_showCustomFingerprintDialog" />
   <java-symbol type="string" name="config_customFingerprintDialogLib" />
   <java-symbol type="string" name="config_customFingerprintDialogClass" />
+
+  <!-- FoD -->
+  <java-symbol type="bool" name="config_needCustomFODView" />
+  <java-symbol type="bool" name="config_usesOnePlusFOD" />
 </resources>

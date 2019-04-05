@@ -89,4 +89,9 @@
 
     <!-- Name of that key handler class -->
     <string name="config_customFingerprintDialogClass" translatable="false"></string>
+
+    <!-- Show a custom view for FOD -->
+    <bool name="config_needCustomFODView">false</bool>
+
+    <bool name="config_usesOnePlusFOD">false</bool>
 </resources>
